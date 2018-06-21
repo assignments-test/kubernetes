@@ -12,6 +12,8 @@ Commands to play with
 Create deployment
 kubectl run NAME --image=image [--env="key=value"] [--port=port] [--replicas=replicas] [--dry-run=bool]
 [--overrides=inline-json] [--command] -- [COMMAND] [args...] [options]
+
+Here port signify the port which will be exposed at pod level
 ```
 
 ```
@@ -28,46 +30,65 @@ kubectl describe (-f FILENAME | TYPE [NAME_PREFIX | -l label] | TYPE/NAME) [opti
 
 Example
 ```
-kubectl run sandyot-nginx --image=sandyot/nginx --port=80
-deployment "sandyot-nginx" created
+kubectl run sandyot-nginx-https --image=sandyot/nginx --port=80
+
+kubectl run sandyot-nginx-http --image=sandyot/nginx --port=80
+
+kubectl run sandyot-nginx-https --image=sandyot/nginx --port=443
+
+kubectl run sandyot-nginx-web --image=sandyot/nginx --port=8080
 ```
 
 ```
 kubectl get -o wide deploy
-NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE       CONTAINERS      IMAGES          SELECTOR
-sandyot-nginx   1         1         1            1           3m        sandyot-nginx   sandyot/nginx   run=sandyot-nginx
+NAME                  DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE       CONTAINERS            IMAGES          SELECTOR
+sandyot-nginx-def     1         1         1            1           11m       sandyot-nginx-def     sandyot/nginx   run=sandyot-nginx-def
+sandyot-nginx-http    1         1         1            1           9m        sandyot-nginx-http    sandyot/nginx   run=sandyot-nginx-http
+sandyot-nginx-https   1         1         1            1           8m        sandyot-nginx-https   sandyot/nginx   run=sandyot-nginx-https
+sandyot-nginx-web     1         1         1            1           12s       sandyot-nginx-web     sandyot/nginx   run=sandyot-nginx-web
+
 ```
 
 ```
-kubectl describe deploy sandyot-nginx
-Name:                   sandyot-nginx
-Namespace:              default
-CreationTimestamp:      Fri, 22 Jun 2018 00:35:12 +0800
-Labels:                 run=sandyot-nginx
+kdesc  deploy
+Name:                   sandyot-nginx-def
+Labels:                 run=sandyot-nginx-def
 Annotations:            deployment.kubernetes.io/revision=1
-Selector:               run=sandyot-nginx
-Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
-StrategyType:           RollingUpdate
-MinReadySeconds:        0
-RollingUpdateStrategy:  1 max unavailable, 1 max surge
+Selector:               run=sandyot-nginx-def
 Pod Template:
-  Labels:  run=sandyot-nginx
+  Labels:  run=sandyot-nginx-def
   Containers:
-   sandyot-nginx:
+   sandyot-nginx-def:
+    Image:        sandyot/nginx
+    Port:         <none>
+
+Name:                   sandyot-nginx-http
+Labels:                 run=sandyot-nginx-http
+Annotations:            deployment.kubernetes.io/revision=1
+Selector:               run=sandyot-nginx-http
+Pod Template:
+  Labels:  run=sandyot-nginx-http
+  Containers:
+   sandyot-nginx-http:
     Image:        sandyot/nginx
     Port:         80/TCP
-    Environment:  <none>
-    Mounts:       <none>
-  Volumes:        <none>
-Conditions:
-  Type           Status  Reason
-  ----           ------  ------
-  Available      True    MinimumReplicasAvailable
-  Progressing    True    NewReplicaSetAvailable
-OldReplicaSets:  <none>
-NewReplicaSet:   sandyot-nginx-7f95b6c649 (1/1 replicas created)
-Events:
-  Type    Reason             Age   From                   Message
-  ----    ------             ----  ----                   -------
-  Normal  ScalingReplicaSet  5m    deployment-controller  Scaled up replica set sandyot-nginx-7f95b6c649 to 1
+
+Name:                   sandyot-nginx-https
+Labels:                 run=sandyot-nginx-https
+Annotations:            deployment.kubernetes.io/revision=1
+Selector:               run=sandyot-nginx-https
+Pod Template:
+  Labels:  run=sandyot-nginx-https
+  Containers:
+   sandyot-nginx-https:
+    Image:        sandyot/nginx
+    Port:         443/TCP
+```
+
+```
+kget -o  wide pods
+NAME                                   READY     STATUS    RESTARTS   AGE       IP          NODE
+sandyot-nginx-def-5bf887d9bd-lmqgz     1/1       Running   0          6m        10.42.1.4   worker2
+sandyot-nginx-http-5f95cbb5cf-nmwg8    1/1       Running   0          4m        10.42.2.4   worker1
+sandyot-nginx-https-57b7c8895d-pvgjs   1/1       Running   0          4m        10.42.0.8   master1
 ```

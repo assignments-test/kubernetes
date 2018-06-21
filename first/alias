@@ -1,0 +1,4 @@
+alias kget="kubectl get"
+alias kdesc="kubectl describe"
+alias kedit="kubectl edit"
+alias kdelete="kubectl delete"
