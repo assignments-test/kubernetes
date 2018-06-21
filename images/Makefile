@@ -1,5 +1,8 @@
-make build-nginx:
+build-nginx:
 	docker build -t sandyot/nginx nginx
 
-make push-nginx:
+run-nginx:
+	docker run -it -P sandyot/nginx
+
+push-nginx:
 	docker push sandyot/nginx
